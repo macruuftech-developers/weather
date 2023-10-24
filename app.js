@@ -3,8 +3,9 @@ let list = document.querySelector(".list");
 let nameC = document.querySelector("#name");
 let weather = document.querySelector("#weather");
 let deg = document.querySelector("#deg");
+let img = document.querySelector("img");
 
-let key = "";
+let key = "cA8Kr2kbzDeJgu5t38AAO7UOcZTKsuhp";
 
 const getSearch = async (city) => {
   let url = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete`;
@@ -13,7 +14,7 @@ const getSearch = async (city) => {
   let data = await api.json();
   let html = "";
   data.map((item) => {
-    html += ` <span>${item.LocalizedName}</span>`;
+    html += `<span>${item.LocalizedName}</span>`;
   });
 
   list.innerHTML = html;
@@ -29,22 +30,28 @@ search.addEventListener("keyup", () => {
 
 list.addEventListener("click", (e) => {
   weathers(e.target.innerText.toLowerCase());
-});
-const weathers = async (cityName) => {
   list.classList.remove("active");
   search.value = "";
+});
+const weathers = async (cityName) => {
   const url = `http://dataservice.accuweather.com/locations/v1/cities/search`;
   const query = `?apikey=${key}&q=${cityName}`;
   let api = await fetch(url + query);
   let data = await api.json();
-
   nameC.innerHTML = `${data[0].EnglishName},${data[0].Country.EnglishName}`;
-  weather.innerHTML = `${data[0].WeatherText}`;
-  //   deg.innerHTML = `${data[0].Temperature.Metric.Value}  &deg;C`;
-
-  console.log(data[0]);
+  getKey(data[0].Key);
 };
-// EnglishName =
-// WeatherText
-// data.Temperature.Metric.Value
-// IsDayTime
+
+const getKey = async (cityKey) => {
+  const url = `http://dataservice.accuweather.com/currentconditions/v1/`;
+  const query = `${cityKey}?apikey=${key}`;
+  let api = await fetch(url + query);
+  let data = await api.json();
+  weather.innerHTML = data[0].WeatherText;
+  deg.innerHTML = `${data[0].Temperature.Metric.Value} &deg;C`;
+  if (data[0].IsDayTime) {
+    img.setAttribute("src", "./sunshine.jpg");
+  } else {
+    img.setAttribute("src", "./night.jpg");
+  }
+};
