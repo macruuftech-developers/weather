@@ -5,7 +5,7 @@ let weather = document.querySelector("#weather");
 let deg = document.querySelector("#deg");
 let img = document.querySelector("img");
 
-let key = "cA8Kr2kbzDeJgu5t38AAO7UOcZTKsuhp";
+let key = "";
 
 const getSearch = async (city) => {
   let url = `http://dataservice.accuweather.com/locations/v1/cities/autocomplete`;
@@ -34,6 +34,7 @@ list.addEventListener("click", (e) => {
   search.value = "";
 });
 const weathers = async (cityName) => {
+  localStorage.setItem("city", cityName);
   const url = `http://dataservice.accuweather.com/locations/v1/cities/search`;
   const query = `?apikey=${key}&q=${cityName}`;
   let api = await fetch(url + query);
@@ -55,3 +56,7 @@ const getKey = async (cityKey) => {
     img.setAttribute("src", "./night.jpg");
   }
 };
+
+if (localStorage.getItem("city")) {
+  weathers(localStorage.getItem("city"));
+}
